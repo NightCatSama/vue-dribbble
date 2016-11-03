@@ -2,6 +2,19 @@
 
 > A Vue.js project
 [未成品](https://nightcatsama.github.io/vue-dribbble/)
+
+
+## Todo
+
+- [x] Main
+- [x] Header
+- [ ] Nav
+- [ ] Footer
+- [ ] Team Details
+- [ ] Project Details
+- [ ] Responsive web design
+
+
 ## Build Setup
 
 ``` bash
