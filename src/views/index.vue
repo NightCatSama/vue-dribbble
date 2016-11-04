@@ -68,7 +68,11 @@ export default {
 			isLoad: true,
 			animated: null,
 			per_page: 20,
+<<<<<<< HEAD
 			total_page: 1,
+=======
+			total_page: 10,
+>>>>>>> master
 			lazyLoadPos: 2000,
 			scrollTop: 0
 		}
