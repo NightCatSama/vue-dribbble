@@ -1,18 +1,18 @@
 # vue-dribbble
 
 > A Vue.js project
-[未成品](https://nightcatsama.github.io/vue-dribbble/)
+[Demo](https://nightcatsama.github.io/vue-dribbble/)
 
 
 ## Todo
 
 - [x] Main
 - [x] Header
-- [ ] Nav
-- [ ] Footer
+- [x] Nav
+- [x] Footer
 - [ ] Team Details
 - [ ] Project Details
-- [ ] Responsive web design
+- [x] Responsive web design
 
 
 ## Build Setup
