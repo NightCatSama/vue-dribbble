@@ -1,7 +1,7 @@
 # vue-dribbble
 
 > A Vue.js project
-[Demo](https://nightcatsama.github.io/vue-dribbble/)
+[Demo](https://nightcatsama.github.io/vue-dribbble/dist)
 
 
 ## Todo
