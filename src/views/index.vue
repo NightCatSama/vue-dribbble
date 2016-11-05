@@ -7,10 +7,11 @@
 				<li v-for="(obj, i) in data">
 					<div class="card">
 						<div class="main">
-							<span v-if="obj.animated && animated !== i" class="gif-indicator"></span>
-							<span v-if="obj.animated" class="gif-indicator-target" @mouseover="startAnimated($event, i, obj)" @mouseleave="endAnimated"></span>
-							<img :src="mode === 2 || mode === 4 ? obj.images.normal : obj.images.teaser" :alt="obj.title">
-							<a v-if="animated !== i" :href="obj.html_url" class="info">
+							<span v-if="obj.animated" class="gif-indicator-target" @mouseenter="startAnimated($event, i, obj)" @mouseleave="endAnimated"></span>
+							<span v-if="obj.animated && animated !== i" :class="['gif-indicator', { 'isLoading': loadingGif && loadingGif === i }]"></span>
+							<img v-if="animated === i" :src="obj.images.hidpi || obj.images.normal" :alt="obj.title">
+							<img v-else :src="mode === 2 || mode === 4 ? obj.images.normal : obj.images.teaser" :alt="obj.title">
+							<a v-if="loadingGif !== i && animated !== i" :href="obj.html_url" class="info">
 								<strong v-html="obj.title"></strong>
 								<small v-html="htmlToText(obj.description)"></small>
 								<em v-html="format(obj.created_at)"></em>
@@ -66,6 +67,7 @@ export default {
 			current: 1,
 			mode: 1,
 			isLoad: true,
+			loadingGif: false,
 			animated: null,
 			per_page: 20,
 <<<<<<< HEAD
@@ -119,17 +121,21 @@ export default {
 			return str && str.replace(/<.*?>/g, '')
 		},
 		startAnimated(e, i, obj) {
-			let el = e.target.nextElementSibling
+			if (this.loadingGif && this.loadingGif === i) {
+				return false
+			}
 			/* global Image */
 			let img = new Image()
 			img.onload = () => {
-				el.src = obj.images.hidpi
+				this.animated = i
+				this.loadingGif = false
 			}
-			img.src = obj.images.hidpi
-			this.animated = i
+			this.loadingGif = i
+			img.src = obj.images.hidpi || obj.images.normal
 		},
 		endAnimated() {
 			this.animated = false
+			this.loadingGif = false
 		},
 		loadList() {
 			fetch(`https://api.dribbble.com/v1/shots?access_token=3ec6a30b7a0ab9fd9f0020e238ec546a72362b008c88c8ce5d0365a9ed125b6f&page=${this.current}&per_page=${this.per_page}`)
@@ -175,7 +181,8 @@ body {
 	@include flex-h-center;
 	flex-direction: column;
 	flex-wrap: wrap;
-	padding: 30px 80px;
+	// padding: 30px 80px;
+	padding: 30px 30px 40px 30px;
 	background-color: #f4f4f4;
 
 	@include max-screen(920px) {
@@ -223,23 +230,28 @@ body {
 			    max-width: 1750px;
 			}
 
-			@include max-screen(1927px) {
+			// @include max-screen(1927px) {
+			@include max-screen(1830px) {
 			    max-width: 1500px;
 			}
 
-			@include max-screen(1677px) {
+			// @include max-screen(1677px) {
+			@include max-screen(1580px) {
 			    max-width: 1250px;
 			}
 
-			@include max-screen(1427px) {
+			// @include max-screen(1427px) {
+			@include max-screen(1330px) {
 			    max-width: 1000px;
 			}
 
-			@include max-screen(1177px) {
+			// @include max-screen(1177px) {
+			@include max-screen(1080px) {
 			    max-width: 750px;
 			}
 
-			@include max-screen(810px) {
+			// @include max-screen(810px) {
+			@include max-screen(830px) {
 			    max-width: 500px;
 			}
 		}
@@ -310,9 +322,19 @@ body {
 		width: 23px;
 		height: 14px;
 		opacity: .75;
-	    z-index: 999;
 		background-position-y: 0px;
 		background-image: url("../assets/gif-indicator.png");
+
+		&.isLoading {
+			animation: loading 1s steps(1) infinite .2s;
+		}
+
+		@keyframes loading {
+			0%{ background-position-y: 56px; }
+			33.3%{ background-position-y: 42px; }
+			66.6%{ background-position-y: 28px; }
+			100%{ background-position-y: 14px; }
+		}
 	}
 
 	.gif-indicator-target {
@@ -338,7 +360,7 @@ body {
 		opacity: 0;
 		display: flex;
 		flex-direction: column;
-		z-index: 998;
+		z-index: 99;
 		background-color: rgba(255,255,255,0.96);
 		transition: all 0.25s;
 

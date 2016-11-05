@@ -357,6 +357,7 @@ header {
 	height: $header-height;
 	@include flex-v-center;
 	position: absolute;
+	top: 0;
 	right: 0;
 	margin-right: 20px;
 
@@ -371,6 +372,11 @@ header {
 		&:hover {
 			color: $nav-hover-color;
 		}
+	}
+
+	@include max-screen(850px) {
+		height: $mobile-header-height;
+		line-height: $mobile-header-height;
 	}
 }
 
