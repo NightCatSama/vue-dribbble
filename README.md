@@ -12,6 +12,8 @@
 - [x] Footer
 - [ ] Team Details
 - [ ] Project Details
+- [ ] Designers
+- [ ] Teams
 - [x] Responsive web design
 
 
