@@ -4,17 +4,20 @@
 [Demo](https://nightcatsama.github.io/vue-dribbble/dist)
 
 
-## Todo
+## Main Progress
 
 - [x] Main
 - [x] Header
 - [x] Nav
 - [x] Footer
-- [ ] Team Details
+- [x] Team Details
+- [x] Responsive web design
+
+## Other Page
+
 - [ ] Project Details
 - [ ] Designers
 - [ ] Teams
-- [x] Responsive web design
 
 
 ## Build Setup
