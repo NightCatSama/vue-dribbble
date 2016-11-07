@@ -28,17 +28,47 @@
 							<span class="fav">{{ numberFormat(obj.likes_count) }}</span>
 						</div>
 					</div>
-					<div class="attribution">
-						<template v-if="obj.team">
+					<div class="attribution" @mouseenter="enterAttribution($event, i, obj)" @mouseleave="leaveAttribution">
+						<div v-if="obj.team" class="info">
 							<img :src="obj.team.avatar_url" alt="head-img">
-							<a href="/RypeArts">{{ obj.team.name }}</a>
+							<a href="/RypeArts" class="name">{{ obj.team.name }}</a>
 							<a class="badge team-badge" href="teams">team</a>
-						</template>
-						<template v-else>
+						</div>
+						<div v-else class="info">
 							<img :src="obj.user.avatar_url" alt="head-img">
-							<a href="/RypeArts">{{ obj.user.name }}</a>
+							<a href="/RypeArts" class="name">{{ obj.user.name }}</a>
 							<a class="badge" href="/pro" v-if="obj.user.pro">pro</a>
-						</template>
+						</div>
+						<div :class="['hover-card', { top: _top, center: _left }]" v-if="current_hover === i && hover_card_data[i] && hover_card_data[i].loading === false">
+							<a class="hover-shots" :href="data[i].user.username">
+								<img v-for="index in hover_card_data[i].shots.length > 4 ? 4 : hover_card_data[i].shots.length" :src="hover_card_data[i].shots[index-1].images.teaser" :alt="hover_card_data[i].shots[index-1].title">
+							</a>
+							<div class="profile-head">
+								<img :src="data[i].user.avatar_url" :alt="data[i].user.name" class="head-img">
+								<h1>{{ data[i].user.name }}</h1>
+								<h3>{{ data[i].user.location }}</h3>
+								<div v-if="hover_card_data[i].team_member" class="img-group">
+									<img v-for="img_obj in hover_card_data[i].team_member" :src="img_obj.avatar_url" :alt="img_obj.name" :title="img_obj.name">
+								</div>
+							</div>
+							<div class="hover-stats">
+								<a v-if="data[i].team" class="badge team-badge" href="teams">team</a>
+								<a v-else class="badge" href="/pro" v-if="obj.user.pro">pro</a>
+								<a class="count" :href="data[i].user.username">
+									<span>{{ numberFormat(data[i].user.shots_count) }}</span>Shots
+								</a>
+								<a class="count" :href="`${data[i].user.username}/followers`">
+									<span>{{ numberFormat(data[i].user.followers_count) }}</span>Followers
+								</a>
+								<div v-if="hover_card_data[i].teams.length" class="on-teams">
+									<strong>Teams</strong>
+									<a v-for="index in hover_card_data[i].teams.length > 4 ? 4 : hover_card_data[i].teams.length" :title="hover_card_data[i].teams[index-1].name" :href="hover_card_data[i].teams[index-1].html_url">
+										<img :src="hover_card_data[i].teams[index-1].avatar_url" alt="hover_card_data[i].teams[index-1].title">
+										<span class="vertical-middle"></span>
+									</a>
+								</div>
+							</div>
+						</div>
 					</div>
 				</li>
 			</ul>
@@ -65,10 +95,15 @@ export default {
 		return {
 			data: [],
 			current: 1,
+			Timer: null,
+			current_hover: false,
+			hover_card_data: {},
 			mode: 1,
 			isLoad: true,
 			loadingGif: false,
 			animated: null,
+			_left: false,
+			_top: false,
 			per_page: 20,
 <<<<<<< HEAD
 			total_page: 1,
@@ -155,6 +190,55 @@ export default {
 		},
 		scroll(e) {
 			this.scrollTop = document.body.scrollTop
+		},
+		enterAttribution(e, i, obj) {
+			let offset = e.target.getBoundingClientRect()
+			if (offset.top < 320) this._top = true
+			if (document.body.clientWidth - offset.left < 450) this._left = true
+			this.getHoverCardData(obj.user.id, i)
+			this.Timer = setTimeout(() => {
+				this.current_hover = i
+			}, 1000)
+		},
+		leaveAttribution() {
+			clearTimeout(this.Timer)
+			this._top = false
+			this._left = false
+			this.current_hover = false
+		},
+		getHoverCardData(id, index) {
+			if (this.hover_card_data[index]) {
+				return false
+			}
+			this.hover_card_data[index] = {
+				loading: true
+			}
+			let num = 0
+
+			const isCompleted = i => {
+				this.hover_card_data[i].loading = false
+				this.hover_card_data = Object.assign({}, this.hover_card_data)
+			}
+
+			fetch(`https://api.dribbble.com/v1/users/${id}/shots?access_token=3ec6a30b7a0ab9fd9f0020e238ec546a72362b008c88c8ce5d0365a9ed125b6f`)
+			.then((data) => data.json())
+			.then((data) => {
+				this.hover_card_data[index].shots = data
+				++num === 2 && isCompleted(index)
+			})
+			fetch(`https://api.dribbble.com/v1/users/${id}/teams?access_token=3ec6a30b7a0ab9fd9f0020e238ec546a72362b008c88c8ce5d0365a9ed125b6f`)
+			.then((data) => data.json())
+			.then((data) => {
+				this.hover_card_data[index].teams = data
+				++num === 2 && isCompleted(index)
+			})
+			if (this.data[index].team) {
+				fetch(`${this.data[index].team.members_url}?access_token=3ec6a30b7a0ab9fd9f0020e238ec546a72362b008c88c8ce5d0365a9ed125b6f`)
+				.then((data) => data.json())
+				.then((data) => {
+					this.hover_card_data[index].team_member = data
+				})
+			}
 		}
 	},
 	mounted() {
@@ -198,7 +282,7 @@ body {
 		flex-wrap: wrap;
 		margin: 0 auto;
 
-		li {
+		>li {
 			margin-bottom: 15px;
 			width: 220px;
 			margin: 0 15px 15px 15px;
@@ -472,20 +556,33 @@ body {
 }
 
 .attribution {
-	@include flex-v-center;
 	font-size: 14px;
 	padding: 10px 5px;
 	color: #aaa;
+	position: relative;
 
-	img {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-	}
+	.info {
+		@include flex-v-center;
 
-	a {
-		color: $blue;
-		margin: 0 3px;
+		img {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+		}
+
+		.name {
+			color: $blue;
+			margin: 0 3px;
+		}
+
+		&:hover {
+			img {
+				opacity: .8;
+			}
+			a.name {
+				color: $dark-blue;
+			}
+		}
 	}
 
 	.badge {
@@ -553,6 +650,170 @@ body {
 
     	&:hover {
     		color: darken($blue, 30%);
+    	}
+    }
+}
+
+.hover-card {
+	background-color: $white;
+    padding: 20px 20px 15px;
+    width: 374px;
+    position: absolute;
+    z-index: 9998;
+    margin-left: -5px;
+    box-shadow: 0 1px 12px rgba(0,0,0,0.2);
+    border-radius: 6px;
+    bottom: 100%;
+    left: 0;
+    box-sizing: content-box;
+
+    &::after {
+		content: "";
+		position: absolute;
+		width: 0;
+		height: 0;
+		bottom: -14px;
+		left: 7px;
+		box-sizing: border-box;
+		border-width: 8px;
+		border-style: solid;
+		border-color: $tr $tr $white $white;
+		transform-origin: 0 0;
+		transform: rotate(-45deg);
+		box-shadow: -3px 2px 2px rgba(0,0,0,0.05);
+    }
+
+    &.top {
+		top: 100%;
+		bottom: auto;
+
+    	&::after {
+			bottom: auto;
+			top: 2px;
+			left: 29px;
+			transform: rotate(-225deg);
+    	}
+    }
+
+    &.center {
+    	left: -187px;
+
+    	&::after {
+    		left: 194px;
+    	}
+    }
+
+    &.top.center::after {
+    	left: 217px;
+    }
+
+    .hover-shots {
+    	width: 100%;
+    	display: block;
+    	text-align: center;
+
+    	img {
+			display: inline-block;
+			max-width: 90px;
+			max-height: 67px;
+			margin-right: 4px;
+    	}
+    }
+
+    .profile-head {
+    	padding-bottom: 60px;
+    	text-align: center;
+
+    	.head-img {
+			width: 60px;
+			height: 60px;
+			padding: 4px;
+			background-color: #f4f4f4;
+			margin: -30px auto 5px auto;
+			border-radius: 50%;
+    	}
+
+    	.img-group {
+    		margin-top: 10px;
+
+    		img {
+				border-radius: 50%;
+				height: 24px;
+				width: 24px;
+				margin: 0 2px;
+    		}
+    	}
+
+    	h1 {
+			font-size: 22px;
+			line-height: 1;
+    		color: $font-color;
+    	}
+
+    	h3 {
+			font-size: 13px;
+			margin: 5px 0 0 0;
+			font-weight: normal;
+			text-align: center;
+    	}
+    }
+
+    .hover-stats {
+    	position: absolute;
+    	width: calc(100% - 40px);
+    	margin: 0 20px 15px 20px;
+    	bottom: 0;
+    	left: 0;
+    	padding-top: 10px;
+    	@include flex-v-center;
+    	border-top: 1px solid #eee;
+
+    	.badge {
+    		opacity: 1;
+    		margin-right: 12px;
+    	}
+
+    	.count {
+    		margin-right: 12px;
+    		font-size: 13px;
+    		color: #999;
+
+    		span {
+    			color: $black;
+    			margin-right: 3px;
+    		}
+    	}
+
+    	.on-teams {
+    		position: absolute;
+			top: 6px;
+			right: 0;
+
+			strong {
+				margin: 0;
+				font-size: 13px;
+				font-weight: normal;
+				color: #999;
+			}
+
+			.vertical-middle {
+				display: inline-block;
+				height: 24px;
+				width: 0;
+				vertical-align: middle;
+			}
+
+    		img {
+				position: relative;
+				width: 24px;
+				margin: 0 2px;
+				vertical-align: middle;
+				border-radius: 50%;
+
+				&:hover {
+					opacity: 0.75;
+				}
+    		}
     	}
     }
 }
