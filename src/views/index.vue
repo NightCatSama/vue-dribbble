@@ -8,7 +8,7 @@
 					<div class="card">
 						<div class="main">
 							<span v-if="obj.animated" class="gif-indicator-target" @mouseenter="startAnimated($event, i, obj)" @mouseleave="endAnimated"></span>
-							<span v-if="obj.animated && animated !== i" :class="['gif-indicator', { 'isLoading': loadingGif && loadingGif === i }]"></span>
+							<span v-if="obj.animated && animated !== i" :class="['gif-indicator', { 'isLoading': typeof loadingGif === 'number' && loadingGif === i }]"></span>
 							<img v-if="animated === i" :src="obj.images.hidpi || obj.images.normal" :alt="obj.title">
 							<img v-else :src="mode === 2 || mode === 4 ? obj.images.normal : obj.images.teaser" :alt="obj.title">
 							<a v-if="loadingGif !== i && animated !== i" :href="obj.html_url" class="info">
