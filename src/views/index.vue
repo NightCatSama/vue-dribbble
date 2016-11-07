@@ -193,7 +193,6 @@ export default {
 		},
 		enterAttribution(e, i, obj) {
 			let offset = e.target.getBoundingClientRect()
-			console.log(offset)
 			if (offset.top < 320) this._top = true
 			if (document.body.clientWidth - offset.left < 450) this._left = true
 			this.getHoverCardData(obj.user.id, i)
