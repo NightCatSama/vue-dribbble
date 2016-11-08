@@ -19,7 +19,7 @@
 						</div>
 						<div class="tools-group">
 							<div class="tools-group-left">
-								<a v-if="obj.rebounds_count" :href="obj.rebounds_url" class="rebound-mark tooltip" original-title="This shot has rebounds.">{{ obj.rebounds_count }}</a>
+								<a v-if="obj.rebounds_count" :href="`${obj.html_url}/rebounds`" class="rebound-mark tooltip" original-title="This shot has rebounds.">{{ obj.rebounds_count }}</a>
 								<a v-if="!obj.rebounds_count && obj.rebound_source_url" :href="obj.html_url" class="rebound tooltip" original-title="This shot is a rebound (reply) of another shot. View the original."></a>
 								<span v-if="obj.attachments_count" class="attachments tooltip" original-title="This shot has attachments"></span>
 							</div>
@@ -39,7 +39,7 @@
 							<a href="/RypeArts" class="name">{{ obj.user.name }}</a>
 							<a class="badge" href="/pro" v-if="obj.user.pro">pro</a>
 						</div>
-						<div :class="['hover-card', { top: _top, center: _left }]" v-if="current_hover === i && hover_card_data[i] && hover_card_data[i].loading === false">
+						<div :class="['hover-card', { center: _left, top: _top }]" v-if="current_hover === i && hover_card_data[i] && hover_card_data[i].loading === false">
 							<a class="hover-shots" :href="data[i].user.username">
 								<img v-for="index in hover_card_data[i].shots.length > 4 ? 4 : hover_card_data[i].shots.length" :src="hover_card_data[i].shots[index-1].images.teaser" :alt="hover_card_data[i].shots[index-1].title">
 							</a>
@@ -102,8 +102,8 @@ export default {
 			isLoad: true,
 			loadingGif: false,
 			animated: null,
-			_left: false,
 			_top: false,
+			_left: false,
 			per_page: 20,
 			total_page: 10,
 			lazyLoadPos: 2000,
@@ -209,7 +209,7 @@ export default {
 			this.hover_card_data[index] = {
 				loading: true
 			}
-			let num = 0
+			let num = this.data[index].team ? 3 : 2
 
 			const isCompleted = i => {
 				this.hover_card_data[i].loading = false
@@ -220,19 +220,20 @@ export default {
 			.then((data) => data.json())
 			.then((data) => {
 				this.hover_card_data[index].shots = data
-				++num === 2 && isCompleted(index)
+				--num === 0 && isCompleted(index)
 			})
 			fetch(`https://api.dribbble.com/v1/users/${id}/teams?access_token=3ec6a30b7a0ab9fd9f0020e238ec546a72362b008c88c8ce5d0365a9ed125b6f`)
 			.then((data) => data.json())
 			.then((data) => {
 				this.hover_card_data[index].teams = data
-				++num === 2 && isCompleted(index)
+				--num === 0 && isCompleted(index)
 			})
-			if (this.data[index].team) {
+			if (num === 3) {
 				fetch(`${this.data[index].team.members_url}?access_token=3ec6a30b7a0ab9fd9f0020e238ec546a72362b008c88c8ce5d0365a9ed125b6f`)
 				.then((data) => data.json())
 				.then((data) => {
 					this.hover_card_data[index].team_member = data
+					--num === 0 && isCompleted(index)
 				})
 			}
 		}

@@ -1,7 +1,9 @@
 <template>
 	<header>
 		<div class="menu" role="button" @click="toggleMenu"></div>
-		<img class="logo" :src="logo" alt="">
+		<a href="/" class="logo">
+			<img :src="logo" alt="">
+		</a>
 		<ul class="nav" role="navigation">
 			<li v-for="(item, index) in data">
 				<a :href="item.link">{{ item.name }}</a>
@@ -41,23 +43,6 @@
 <script>
 export default {
 	name: 'header',
-	methods: {
-		toggleMenu() {
-			this.isSmallScreen = !this.isSmallScreen
-		},
-		switchMenu(e, obj) {
-			if (obj.canClick) {
-				e.preventDefault()
-				this.title = obj.otherName || obj.name
-				this.stage = this.data
-				this.data = obj.childrens
-			}
-		},
-		gobackMenu() {
-			this.data = this.stage
-			this.title = ''
-		}
-	},
 	data() {
 		return {
 			isSmallScreen: false,
@@ -206,6 +191,23 @@ export default {
 				}]
 			}]
 		}
+	},
+	methods: {
+		toggleMenu() {
+			this.isSmallScreen = !this.isSmallScreen
+		},
+		switchMenu(e, obj) {
+			if (obj.canClick) {
+				e.preventDefault()
+				this.title = obj.otherName || obj.name
+				this.stage = this.data
+				this.data = obj.childrens
+			}
+		},
+		gobackMenu() {
+			this.data = this.stage
+			this.title = ''
+		}
 	}
 }
 </script>
@@ -238,6 +240,10 @@ header {
 
 	.logo {
 		padding: 0 30px;
+
+		img {
+			display: block;
+		}
 	}
 
 	.nav {
