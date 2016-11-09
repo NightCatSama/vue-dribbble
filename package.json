@@ -1,8 +1,13 @@
 {
   "name": "vue-dribbble",
   "version": "1.0.0",
-  "description": "A Vue.js project",
-  "author": "陈慕杰 <642163903@qq.com>",
+  "description": "Use of vue2 build dribbble.com",
+  "keywords": [
+    "vue",
+    "dribbble",
+    "dribbble.com"
+  ],
+  "author": "NightCatSama <642163903@qq.com>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

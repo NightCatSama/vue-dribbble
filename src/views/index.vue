@@ -82,14 +82,19 @@
 			</div>
 		</div>
 		<v-footer></v-footer>
+		<transition name="fade">
+			<div v-show="backtotopShow" class="backtotop" @click="scrollToTop"></div>
+		</transition>
 	</div>
 </template>
 
 <script>
 import fetch from 'isomorphic-fetch'
 import { vHeader, vFooter, vNav } from '../components/'
+import scrollMixin from '../util'
 
 export default {
+	mixins: [scrollMixin],
 	name: 'app',
 	data() {
 		return {
@@ -107,6 +112,7 @@ export default {
 			per_page: 20,
 			total_page: 10,
 			lazyLoadPos: 2000,
+			backtotopShow: false,
 			scrollTop: 0
 		}
 	},
@@ -118,6 +124,13 @@ export default {
 	watch: {
 		scrollTop: function(top) {
 			let SCREEN_HEIGHT = document.body.scrollHeight
+			if (top > 100) {
+				this.backtotopShow = true
+			}
+			else {
+				this.backtotopShow = false
+			}
+
 			if (top > SCREEN_HEIGHT - this.lazyLoadPos && !this.isLoad && this.current < this.total_page) {
 				this.isLoad = true
 				this.current++
@@ -813,5 +826,28 @@ body {
     		}
     	}
     }
+}
+
+.backtotop {
+	position: fixed;
+	bottom: 15px;
+	right: 20px;
+	width: 50px;
+	height: 50px;
+	opacity: .37;
+	background: url("../assets/backtotop.png") no-repeat;
+	background-size: contain;
+	cursor: pointer;
+
+	&:hover {
+		opacity: .72;
+	}
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: opacity .4s
+}
+.fade-enter, .fade-leave-active {
+	opacity: 0
 }
 </style>
