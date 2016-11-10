@@ -1,24 +1,17 @@
 # vue-dribbble
 
-> A Vue.js project
-[Demo](https://nightcatsama.github.io/vue-dribbble/dist)
+> Use of vue2 build dribbble.com（使用Vue2仿写dribbble.com首页）
+<br>
+[Live Demo](https://nightcatsama.github.io/vue-dribbble/dist)
 
 
 ## Main Progress
-
 - [x] Main
 - [x] Header
 - [x] Nav
 - [x] Footer
 - [x] Team Details
-- [x] Responsive web design
-
-## Other Page
-
-- [ ] Project Details
-- [ ] Designers
-- [ ] Teams
-
+- [x] Responsive ( 响应式 )
 
 ## Build Setup
 

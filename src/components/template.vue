@@ -1,6 +1,6 @@
 <template>
 	<div>
-		{{ msg }}.
+		{{ msg }}
 	</div>
 </template>
 
@@ -8,7 +8,7 @@
 export default {
 	data() {
 		return {
-			msg: 'Header'
+			msg: 'Template'
 		}
 	}
 }
@@ -16,7 +16,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-h1, h2 {
-  font-weight: normal;
-}
 </style>
